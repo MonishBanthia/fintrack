@@ -4,14 +4,14 @@ import './styles.css';
 import Button from '/src/components/Button';
 
 
-function Cards({ income, expense, totalbalance, showExpenseModal,  showIncomeModal}) {
+function Cards({ income, expense, totalbalance, showExpenseModal,  showIncomeModal , reset}) {
   return (
     <div>
         <Row className='my-row'>
            <Card  className='my-card' >
             <h2>Current Balance</h2>
             <p className='my-p'>${totalbalance}</p>
-            <Button text="Reset Balance" blue={true}></Button>
+            <Button text="Reset Balance" blue={true} onClick={reset} ></Button>
            </Card>
            <Card  className='my-card' >
            <h2>Current Income</h2>

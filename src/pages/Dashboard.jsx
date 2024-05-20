@@ -1,7 +1,6 @@
 import { React, useState, useEffect } from 'react'
 import Header from '/src/components/Header';
 import Cards from '/src/components/Cards';
-import moment from "moment"; // moment is use for global time object
 import AddExpense from '/src/components/Modals/addExpense';
 import AddIncome from '/src/components/Modals/addIncome';
 import { auth, db } from "../firebase";
@@ -11,7 +10,7 @@ import { addDoc, collection, getDocs, query } from "firebase/firestore";
 import { toast } from "react-toastify";
 import ChartComponent from "/src/components/Charts";
 import NoTransactions from "/src/components/NoTransaction";
-
+import { doc, setDoc } from "firebase/firestore";
 
 function Dashboard() {
 
@@ -101,6 +100,31 @@ function Dashboard() {
   },[transactions]);
 
 
+  function reset() {
+    console.log("resetting");
+    setTransactions([]);
+    setIncome(0);
+    setExpense(0);
+    setTotalBalance(0);
+  
+    // Get the current user's document reference
+    const userDocRef = doc(db, "users", auth.currentUser.uid);
+  
+    // Update the user's transactions field to an empty array
+    setDoc(userDocRef, { transactions: [] }, { merge: true })
+      .then(() => {
+        console.log("Transactions successfully reset in Firebase");
+        // toast.success("Data reset successfully");
+      })
+      .catch((error) => {
+        console.error("Error resetting transactions in Firebase:", error);
+        // toast.error("Error resetting data");
+      });
+  }
+  
+
+
+
   function CalculateBalance(){
      let incomeTotal = 0;
      let ExpenseTotal = 0;
@@ -147,7 +171,7 @@ function Dashboard() {
       <Header></Header>
       {loading ? (<p>Loading..</p>) : (<>
         <Cards income={income} expense={expense} totalbalance={totalbalance}
-           showExpenseModal={showExpenseModal} showIncomeModal={showIncomeModal} />
+           showExpenseModal={showExpenseModal} showIncomeModal={showIncomeModal} reset={reset} />
           
           {transactions && transactions.length!=0 ? <ChartComponent sortedTransaction={sortedTransaction} /> : <NoTransactions />}
 
